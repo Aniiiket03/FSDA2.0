@@ -1,0 +1,74 @@
+USE WAREHOUSE DEMO_WAREHOUSE;
+USE DATABASE DEMO_DATABASE;
+CREATE OR REPLACE TABLE AK_SALES
+(
+  order_id VARCHAR(50)primary key,
+  order_date DATE not null,
+  ship_date DATE not null,
+  ship_mode VARCHAR(690),
+  customer_name STRING,
+  segment VARCHAR(75),
+  state VARCHAR(80),
+  country VARCHAR(80),
+  market VARCHAR(20),
+  region VARCHAR(20),
+  product_id VARCHAR(990)unique ,
+  category VARCHAR(90),
+  sub_category VARCHAR(180),
+  product_name VARCHAR(200),
+  sales varchar(10),
+  quantity varchar(12),
+  discount varchar(17),
+  profit varchar(17),
+  shipping_cost varchar(50),
+  order_priority VARCHAR(100),
+  year varchar(5) not null
+ );
+ select distinct * from AK_SALES;
+ -----Assignment on AK_SALES------
+ --1.Apply primary key on ak_sales order_id
+ Alter table AK_SALES
+ add primary key(order_id);;
+ describe table AK_SALES;
+ 
+ --2.CHECK DATA TYPE OF ORDER DATE AND SHIP DATE AND MODIFY IF REQUIRED--
+ DONE;
+ 
+ 
+ --mysql> SELECT EXTRACT(DAY FROM '2020-07-15 08:06:44') AS DAY;  
+ --3.EXTACT THE LAST NUMBER AFTER THE - AND CREATE OTHER COLUMN AND UPDATE IT.
+CREATE OR REPLACE TABLE AK_SALES AS
+SELECT*, REGEXP_SUBSTR(ORDER_ID,'[[:digit:]]+',1,2) AS ORDER_EXTRACT
+from AK_SALES;
+
+
+--  4.FLAG ,IF DISCOUNT IS GREATER THEN 0 THEN  YES ELSE FALSE AND PUT IT IN NEW COLUMN FRO EVERY ORDER ID.
+SELECT  *,
+CASE 
+WHEN discount>0  THEN 'YES'
+ELSE 'FALSE'
+END AS Discount_mark
+FROM  AK_SALES;
+SELECT DISTINCT * FROM AK_SALES;
+
+     
+---5.   FIND OUT THE FINAL PROFIT AND PUT IT IN COLUMN FOR EVERY ORDER ID.
+
+
+---6.FIND OUT HOW MUCH DAYS TAKEN FOR EACH ORDER TO PROCESS FOR THE SHIPMENT FOR EVERY ORDER ID.
+insert into AK_SALES 
+select*, 
+DATEDIFF(day, ORDER_DATE ,SHIP_DATE) AS process_days
+from AK_SALES;
+
+
+--7.FLAG THE PROCESS DAY AS BY RATING IF IT TAKES LESS OR EQUAL 3  DAYS MAKE 5,LESS OR EQUAL THAN 6 DAYS BUT MORE THAN 3 MAKE 4
+--,LESS THAN 10 BUT MORE THAN 6 MAKE 3,MORE THAN 10 MAKE IT 2 FOR EVERY ORDER ID.
+select *,
+case 
+when process_days<=3 then '5'
+when process_days between 4 and 6 then '4'
+when process_days between 7 and 10 then '3'
+else '2'
+end as RATING 
+From AK_SALES;
